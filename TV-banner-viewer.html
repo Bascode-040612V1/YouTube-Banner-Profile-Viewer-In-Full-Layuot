@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YouTube Banner & Profile Viewer</title>
+  <link rel="icon" type="image/png" href="images/website_icon/website_icon.png">
   <style>
     * {
       margin: 0;
@@ -12,17 +13,22 @@
     }
 
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       overflow: auto;
-      background-color: #0f0f0f;
+      background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
       padding: 20px;
-      color: white;
+      color: #ffffff;
+      min-height: 100vh;
     }
 
     h1 {
       color: #ff0000;
       margin-bottom: 20px;
       text-align: center;
+      font-weight: 700;
+      font-size: 2.5rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      letter-spacing: -0.5px;
     }
 
     .controls {
@@ -33,11 +39,13 @@
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 10px;
-      padding: 15px;
-      background-color: #1a1a1a;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      gap: 15px;
+      padding: 20px;
+      background: rgba(30, 30, 30, 0.8);
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .controls > div {
@@ -47,39 +55,58 @@
     }
 
     .controls label {
-      margin-right: 5px;
-      font-weight: bold;
+      margin-right: 8px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #e0e0e0;
     }
 
     .controls input, .controls select {
-      padding: 8px 12px;
+      padding: 12px 16px;
       font-size: 16px;
-      border-radius: 4px;
-      margin-right: 5px;
-      border: 1px solid #333;
-      background-color: #222;
+      border-radius: 8px;
+      margin-right: 8px;
+      border: 2px solid #333;
+      background: rgba(20, 20, 20, 0.8);
       color: white;
+      transition: all 0.3s ease;
+      min-width: 300px;
+    }
+
+    .controls input:focus, .controls select:focus {
+      outline: none;
+      border-color: #ff0000;
+      box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
     }
 
     .controls button {
-      padding: 8px 16px;
+      padding: 12px 24px;
       font-size: 16px;
-      border-radius: 4px;
-      background-color: #ff0000;
+      font-weight: 600;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
       color: white;
       border: none;
       cursor: pointer;
-      /* Removed display: none to make button visible */
-      transition: background-color 0.3s;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
 
     .controls button:hover {
-      background-color: #e60000;
+      background: linear-gradient(135deg, #ff3333 0%, #e60000 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .controls button:active {
+      transform: translateY(0);
     }
 
     .controls button:disabled {
-      background-color: #666;
+      background: linear-gradient(135deg, #666 0%, #444 100%);
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
     .preview-container {
@@ -90,9 +117,11 @@
       background-repeat: no-repeat;
       position: relative;
       margin: 0 auto;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
       overflow: hidden;
       background-image: url('Banner.jpg');
+      border-radius: 12px;
+      transition: all 0.3s ease;
     }
 
     /* Different layouts */
@@ -248,7 +277,11 @@
       left: 50px;
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 25px;
+      padding: 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     }
 
     .profile-picture {
@@ -257,7 +290,12 @@
       border-radius: 50%;
       border: 5px solid #fff;
       object-fit: cover;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .profile-picture:hover {
+      transform: scale(1.05);
     }
 
     .channel-details {
@@ -266,100 +304,305 @@
 
     .channel-name {
       font-size: 2.5rem;
-      font-weight: bold;
-      margin-bottom: 10px;
+      font-weight: 700;
+      margin-bottom: 15px;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      color: #fff;
     }
 
     .subscriber-count {
       font-size: 1.5rem;
-      color: white;
+      color: #e0e0e0;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      margin-bottom: 15px;
+    }
+
+    .view-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .view-btn:hover {
+      background: linear-gradient(135deg, #ff3333 0%, #e60000 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .view-btn:active {
+      transform: translateY(0);
+    }
+
+    .view-btn.viewed {
+      background: linear-gradient(135deg, #4CAF50 0%, #3d8b40 100%);
+    }
+
+    .view-btn {
+      padding: 8px 16px;
+      background-color: #ff0000;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .view-btn:hover {
+      background-color: #e60000;
+    }
+
+    .view-btn.viewed {
+      background-color: #4CAF50;
     }
 
     .error {
       color: #ff4d4d;
-      margin-top: 20px;
+      margin-top: 25px;
       text-align: center;
-      padding: 15px;
-      background-color: rgba(255, 77, 77, 0.1);
-      border-radius: 5px;
+      padding: 20px;
+      background: rgba(255, 77, 77, 0.15);
+      border-radius: 12px;
       border: 1px solid #ff4d4d;
+      font-weight: 500;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
     }
 
     .success {
       color: #4CAF50;
-      margin-top: 20px;
-      text-align: center;
-      padding: 15px;
-      background-color: rgba(76, 175, 80, 0.1);
-      border-radius: 5px;
-      border: 1px solid #4CAF50;
-    }
-
-    .loading {
+      margin-top: 25px;
       text-align: center;
       padding: 20px;
-      font-size: 1.5rem;
+      background: rgba(76, 175, 80, 0.15);
+      border-radius: 12px;
+      border: 1px solid #4CAF50;
+      font-weight: 500;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    /* Banner buttons */
+    .banner-buttons {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    /* Description section */
+    .description {
+      text-align: center;
+      margin: 20px auto 30px;
+      max-width: 800px;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #e0e0e0;
+    }
+
+    .description p {
+      margin: 0;
+      padding: 10px 0;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      background: rgba(20, 20, 20, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1rem;
+      color: #aaa;
+    }
+
+    .footer a {
+      color: #ff0000;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer a:hover {
+      color: #ff3333;
+      text-decoration: underline;
+    }
+
+    /* Buy Me a Coffee Button */
+    .coffee-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #FFDD00, #FBB03B);
+      color: #000;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 15px;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.3s ease;
     }
 
-    .spinner {
-      border: 4px solid rgba(255, 255, 255, 0.3);
+    .coffee-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .coffee-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Coffee Popup */
+    .coffee-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(30, 30, 30, 0.95);
+      border-radius: 15px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      z-index: 2000;
+      display: none;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-width: 90%;
+      max-height: 90%;
+      overflow: auto;
+    }
+
+    .coffee-popup img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    .close-popup {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #ff0000;
+      color: white;
+      border: none;
       border-radius: 50%;
-      border-top: 4px solid #ff0000;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1500;
+      display: none;
     }
 
     /* Responsive design for control panel */
     @media (max-width: 768px) {
       .controls {
         flex-direction: column;
-        gap: 15px;
+        gap: 20px;
+        padding: 25px;
       }
       
       .controls > div {
         width: 100%;
-        justify-content: space-between;
+        justify-content: center;
       }
       
       .controls input, .controls select {
         flex: 1;
         margin-right: 0;
+        min-width: auto;
       }
       
       .controls button {
         width: 100%;
-        padding: 12px;
+        padding: 15px;
+        font-size: 1.1rem;
+      }
+      
+      .channel-info {
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        gap: 15px;
+        padding: 15px;
+      }
+      
+      .profile-picture {
+        width: 80px;
+        height: 80px;
+        border-width: 3px;
+      }
+      
+      .channel-name {
+        font-size: 1.8rem;
+        margin-bottom: 8px;
+      }
+      
+      .subscriber-count {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+      }
+      
+      .view-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
       }
     }
 
     @media (max-width: 480px) {
       body {
-        padding: 10px;
+        padding: 15px;
       }
       
       .controls {
-        padding: 10px;
+        padding: 20px;
       }
       
       .controls input, .controls select {
         width: 100%;
-        margin-top: 5px;
+        margin-top: 8px;
+        padding: 15px;
       }
       
       h1 {
-        font-size: 1.5rem;
+        font-size: 2rem;
+        margin-bottom: 25px;
+      }
+      
+      .channel-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
       }
     }
   </style>
@@ -368,6 +611,10 @@
   <h1>YouTube Banner & Profile Viewer</h1>
   
   <div class="controls">
+    <div>
+      <button id="tool-toggle-thumbnail">Switch to Thumbnail Viewer</button>
+    </div>
+    
     <div>
       <button id="layout-toggle">Layout: Full Image</button>
     </div>
@@ -380,14 +627,48 @@
     <button id="viewButton" onclick="getBannerAndProfile()">View Channel</button>
   </div>
 
+  <!-- Description section -->
+  <div class="description">
+    <p>This tool allows you to view and download YouTube channel banners and profile pictures. Simply enter a YouTube channel URL to get started. Use Ctrl + Shift + - to zoom out and view the full banner.</p>
+  </div>
+
   <div id="output"></div>
 
+  <!-- Footer -->
+  <div class="footer">
+    <p>&copy; 2025 Bascode. All rights reserved. | 
+      <a href="https://github.com/Bascode-040612V1/YouTube-Banner-Profile-Viewer-In-Full-Layuot" target="_blank">GitHub Repository</a> |
+      <a href="https://joshua.is-great.net/?i=1" target="_blank">Visit Developer</a>
+    </p>
+  </div>
+  
+  <!-- Buy Me a Coffee Button -->
+  <button class="coffee-button" id="buyCoffeeBtn">
+    <svg class="coffee-icon" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M2 21h16v-1a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1zM20 7h-2V6a4 4 0 0 0-4-4h-4a4 4 0 0 0-4 4v1H4a1 1 0 0 0-1 1v8a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM8 6a2 2 0 0 1 4 0v1H8V6zm7 12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8h10v10z"/>
+      <circle cx="18" cy="10" r="2"/>
+    </svg>
+    Buy me a coffee
+  </button>
+  
+  <!-- Coffee Popup -->
+  <div class="overlay" id="overlay" onclick="hideCoffeePopup()"></div>
+  <div class="coffee-popup" id="coffeePopup">
+    <button class="close-popup" onclick="hideCoffeePopup()">&times;</button>
+    <img src="images/Buy_Me_a_Coffee.jpg" alt="Buy Me a Coffee">
+  </div>
+  
   <script>
     // Set up Enter key press event
     document.getElementById('channelUrl').addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         getBannerAndProfile();
       }
+    });
+
+    // Tool toggle functionality
+    document.getElementById('tool-toggle-thumbnail').addEventListener('click', function() {
+        window.location.href = 'thumbnail-viewer.html';
     });
 
     // Layout cycling functionality
@@ -438,6 +719,11 @@
       }
     });
 
+    // Go to YouTube channel
+    function goToChannel(channelUrl) {
+      window.open(channelUrl, '_blank');
+    }
+    
     async function getBannerAndProfile() {
       const url = document.getElementById('channelUrl').value.trim();
       const output = document.getElementById('output');
@@ -506,6 +792,13 @@
         const layoutClass = selectedLayout.value !== 'full' ? selectedLayout.value : '';
         
         if (bannerUrl || profileUrl) {
+          // Extract channel ID for YouTube link
+          let channelUrl = url;
+          const channelMatch = url.match(/youtube\.com\/(@[^\/]+|channel\/[^\/]+)/);
+          if (channelMatch) {
+            channelUrl = `https://www.youtube.com/${channelMatch[1]}`;
+          }
+          
           let previewHTML = `
             <div class="preview-container ${layoutClass}" style="background-image: url('${bannerUrl}')">
               <div class="preview-content">
@@ -533,6 +826,10 @@
           
           previewHTML += `
             </div>
+            <div class="banner-buttons">
+              <button class="view-btn" onclick="downloadImage('${bannerUrl}', '${channelName}_banner', this)" style="margin: 10px 5px;">Download Banner</button>
+              <button class="view-btn" onclick="goToChannel('${channelUrl}')" style="margin: 10px 5px;">Go to YouTube Channel</button>
+            </div>
             <p class="success">✅ Channel data loaded successfully!</p>
           `;
           
@@ -549,6 +846,47 @@
         viewButton.disabled = false;
       }
     }
+    
+    // Download image
+    function downloadImage(url, filename, button) {
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename.replace(/[^a-zA-Z0-9]/g, '_') + '.jpg';
+      
+      // Add feedback to button
+      const originalText = button.textContent;
+      button.textContent = 'Downloading...';
+      button.classList.add('viewed');
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Reset button after a short delay
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('viewed');
+      }, 2000);
+    }
+    
+    // Show coffee popup
+    function showCoffeePopup() {
+      document.getElementById('coffeePopup').style.display = 'block';
+      document.getElementById('overlay').style.display = 'block';
+    }
+    
+    // Hide coffee popup
+    function hideCoffeePopup() {
+      document.getElementById('coffeePopup').style.display = 'none';
+      document.getElementById('overlay').style.display = 'none';
+    }
+    
+    // Add event listener for the Buy Me a Coffee button
+    document.getElementById('buyCoffeeBtn').addEventListener('click', function() {
+      showCoffeePopup();
+    });
   </script>
 </body>
 </html>

@@ -4,8 +4,15 @@
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![CORS Proxy](https://img.shields.io/badge/CORS_Proxy-4A90E2?style=for-the-badge&logo=server&logoColor=white)
+![Web App](https://img.shields.io/badge/Web_App-00C853?style=for-the-badge&logo=googlechrome&logoColor=white)
+![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)
 
-A web-based tool for previewing YouTube channel banners and profile pictures with responsive layout visualization across different device views.
+A web-based tool for previewing YouTube channel banners and profile pictures with responsive layout visualization across different device views and download capability.
+
+## Related Tools
+
+- [Main Banner Editor](../README.md) - Create and customize YouTube banners
+- [Thumbnail Viewer](thumbnail-viewer.md) - Preview YouTube video thumbnails in various resolutions
 
 ## Features
 
@@ -17,9 +24,12 @@ A web-based tool for previewing YouTube channel banners and profile pictures wit
   - Mobile View - 1546 × 423 (masked view)
   - Full Image with View Lines - 2560 × 1440 (overlay indicators)
 - **Sequential Layout Switching**: Cycle through layouts with a single button
+- **Banner Download**: Download channel banners in high resolution
 - **Real-time Preview**: See channel banners instantly as you enter URLs
 - **Responsive Design**: Works on different screen sizes
 - **Channel Information**: Displays channel name and subscriber count
+- **Tool Switching**: Easily switch between the TV Viewer, Banner Editor, and Thumbnail Viewer
+- **User-Friendly Interface**: Modern UI with clear feedback for all actions
 
 ## Getting Started
 
@@ -43,7 +53,9 @@ A web-based tool for previewing YouTube channel banners and profile pictures wit
    - Tablet View: Shows only the tablet-safe area with masking
    - Mobile View: Shows only the mobile-safe area with masking
    - Full with Lines: Shows the full banner with overlay indicators for all device views
-4. **Responsive Controls**: The interface adapts to different screen sizes
+4. **Download Banner**: Click "Download Banner" to save the channel banner image
+5. **Switch Tools**: Use the "Switch to Thumbnail Viewer" button to access the thumbnail viewer, or "Switch to Banner Editor" to access the main editor
+6. **Responsive Controls**: The interface adapts to different screen sizes
 
 ## Layout Descriptions
 
@@ -56,10 +68,12 @@ A web-based tool for previewing YouTube channel banners and profile pictures wit
 ## Technical Features
 
 - **CORS Proxy**: Uses `corsproxy.io` to fetch channel data
+- **Banner Download**: Enables downloading of high-resolution channel banners
 - **Image Optimization**: Automatically resizes images to optimal dimensions
 - **Error Handling**: Displays user-friendly error messages for invalid URLs or private channels
 - **Loading States**: Shows spinner and status messages during data fetching
 - **Responsive UI**: Adapts layout for mobile and tablet devices
+- **Keyboard Support**: Press Enter to fetch channel data after entering a URL
 
 ## Browser Support
 

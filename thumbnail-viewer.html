@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Thumbnail Viewer</title>
+  <link rel="icon" type="image/png" href="images/website_icon/website_icon.png">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: auto;
+      background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+      padding: 20px;
+      color: #ffffff;
+      position: relative;
+      min-height: 100vh;
+    }
+
+    h1 {
+      color: #ff0000;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 2.5rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      letter-spacing: -0.5px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      text-align: center;
+      color: white;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      padding: 20px;
+      background: rgba(30, 30, 30, 0.8);
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .controls > div {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .controls label {
+      margin-right: 8px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      color: #e0e0e0;
+    }
+
+    .controls input, .controls select {
+      padding: 12px 16px;
+      font-size: 16px;
+      border-radius: 8px;
+      margin-right: 8px;
+      border: 2px solid #333;
+      background: rgba(20, 20, 20, 0.8);
+      color: white;
+      transition: all 0.3s ease;
+      min-width: 300px;
+    }
+
+    .controls input:focus, .controls select:focus {
+      outline: none;
+      border-color: #ff0000;
+      box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
+    }
+
+    .controls button {
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .controls button:hover {
+      background: linear-gradient(135deg, #ff3333 0%, #e60000 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+    }
+
+    .controls button:active {
+      transform: translateY(0);
+    }
+
+    .controls button:disabled {
+      background: linear-gradient(135deg, #666 0%, #444 100%);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .preview-container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      display: none;
+    }
+
+    .channel-info {
+      position: absolute;
+      bottom: 30px;
+      left: 30px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .profile-picture {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      object-fit: cover;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
+    .channel-details {
+      text-align: left;
+    }
+
+    .channel-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 5px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .subscriber-count {
+      font-size: 1rem;
+      color: white;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .error {
+      color: #ff4d4d;
+      margin-top: 25px;
+      text-align: center;
+      padding: 20px;
+      background: rgba(255, 77, 77, 0.15);
+      border-radius: 12px;
+      border: 1px solid #ff4d4d;
+      font-weight: 500;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .success {
+      color: #4CAF50;
+      margin-top: 25px;
+      text-align: center;
+      padding: 20px;
+      background: rgba(76, 175, 80, 0.15);
+      border-radius: 12px;
+      border: 1px solid #4CAF50;
+      font-weight: 500;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+      font-size: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      background: rgba(30, 30, 30, 0.8);
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+    }
+
+    .spinner {
+      border: 5px solid rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      border-top: 5px solid #ff0000;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Description section */
+    .description {
+      text-align: center;
+      margin: 20px auto 30px;
+      max-width: 800px;
+      padding: 20px;
+      background: rgba(30, 30, 30, 0.8);
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: #e0e0e0;
+    }
+
+    .description p {
+      margin: 0;
+      padding: 10px 0;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      background: rgba(20, 20, 20, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 1rem;
+      color: #aaa;
+    }
+
+    .footer a {
+      color: #ff0000;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .footer a:hover {
+      color: #ff3333;
+      text-decoration: underline;
+    }
+
+    /* Buy Me a Coffee Button */
+    .coffee-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      background: linear-gradient(135deg, #FFDD00, #FBB03B);
+      color: #000;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .coffee-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .coffee-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* Coffee Popup */
+    .coffee-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(30, 30, 30, 0.95);
+      border-radius: 15px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+      padding: 20px;
+      z-index: 2000;
+      display: none;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      max-width: 90%;
+      max-height: 90%;
+      overflow: auto;
+    }
+
+    .coffee-popup img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+
+    .close-popup {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: #ff0000;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 1500;
+      display: none;
+    }
+
+    /* Thumbnail display styles */
+    .thumbnail-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 25px;
+      justify-content: center;
+      margin-top: 30px;
+      padding: 10px;
+    }
+
+    .thumbnail-card {
+      background: rgba(30, 30, 30, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .thumbnail-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .thumbnail-img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .thumbnail-card:hover .thumbnail-img {
+      transform: scale(1.05);
+    }
+
+    .thumbnail-info {
+      padding: 20px;
+    }
+
+    .thumbnail-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #fff;
+      text-align: center;
+    }
+
+    .copy-btn {
+      width: 100%;
+      padding: 8px;
+      background-color: #ff0000;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .copy-btn:hover {
+      background-color: #e60000;
+    }
+
+    .copy-btn.copied {
+      background-color: #4CAF50;
+    }
+
+    .view-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .view-btn:hover {
+      background: linear-gradient(135deg, #ff3333 0%, #e60000 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .view-btn:active {
+      transform: translateY(0);
+    }
+
+    .view-btn.viewed {
+      background: linear-gradient(135deg, #4CAF50 0%, #3d8b40 100%);
+    }
+
+    /* Responsive design for control panel */
+    @media (max-width: 768px) {
+      .controls {
+        flex-direction: column;
+        gap: 20px;
+        padding: 25px;
+      }
+      
+      .controls > div {
+        width: 100%;
+        justify-content: center;
+      }
+      
+      .controls input, .controls select {
+        flex: 1;
+        margin-right: 0;
+        min-width: auto;
+      }
+      
+      .controls button {
+        width: 100%;
+        padding: 15px;
+        font-size: 1.1rem;
+      }
+      
+      .thumbnail-container {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .thumbnail-card {
+        max-width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 15px;
+      }
+      
+      .controls {
+        padding: 20px;
+      }
+      
+      .controls input, .controls select {
+        width: 100%;
+        margin-top: 8px;
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 25px;
+      }
+      
+      .thumbnail-info {
+        padding: 15px;
+      }
+      
+      .thumbnail-name {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>YouTube Thumbnail Viewer</h1>
+  
+  <div class="controls">
+    <div>
+      <button id="tool-toggle-tv">Switch to TV Viewer</button>
+    </div>
+    
+    <div>
+      <label for="videoUrl">Video URL or ID:</label>
+      <input type="text" id="videoUrl" placeholder="https://www.youtube.com/watch?v=... or video ID" />
+    </div>
+    
+    <button id="viewButton" onclick="getThumbnails()">Get Thumbnails</button>
+  </div>
+
+  <!-- Description section -->
+  <div class="description">
+    <p>This tool allows you to view and download YouTube video thumbnails in various resolutions. Simply enter a YouTube video URL or ID to get started. You can preview thumbnails, download them in their original quality, or visit the actual video page. Use (Ctrl Shift -) to zoom out and view the full banner.</p>
+  </div>
+
+  <div id="output"></div>
+  <div id="thumbs" class="thumbnail-container"></div>
+  
+  <!-- Footer -->
+  <div class="footer">
+    <p>&copy; 2025 Bascode. All rights reserved. | 
+      <a href="https://github.com/Bascode-040612V1/YouTube-Banner-Profile-Viewer-In-Full-Layuot" target="_blank">GitHub Repository</a> |
+      <a href="https://joshua.is-great.net/?i=1" target="_blank">Visit Developer</a>
+    </p>
+  </div>
+  
+  <!-- Buy Me a Coffee Button -->
+  <button class="coffee-button" id="buyCoffeeBtn">
+    <svg class="coffee-icon" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M2 21h16v-1a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1zM20 7h-2V6a4 4 0 0 0-4-4h-4a4 4 0 0 0-4 4v1H4a1 1 0 0 0-1 1v8a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V8a1 1 0 0 0-1-1zM8 6a2 2 0 0 1 4 0v1H8V6zm7 12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8h10v10z"/>
+      <circle cx="18" cy="10" r="2"/>
+    </svg>
+    Buy me a coffee
+  </button>
+  
+  <!-- Coffee Popup -->
+  <div class="overlay" id="overlay" onclick="hideCoffeePopup()"></div>
+  <div class="coffee-popup" id="coffeePopup">
+    <button class="close-popup" onclick="hideCoffeePopup()">&times;</button>
+    <img src="images/Buy_Me_a_Coffee.jpg" alt="Buy Me a Coffee">
+  </div>
+  
+  <script>
+    // Set up Enter key press event
+    document.getElementById('videoUrl').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        getThumbnails();
+      }
+    });
+
+    // Tool toggle functionality
+    document.getElementById('tool-toggle-tv').addEventListener('click', function() {
+      window.location.href = 'TV-banner-viewer.html';
+    });
+
+    // Parse YouTube video ID from URL or ID
+    function parseVideoId(urlOrId) {
+      // If it's already a video ID (11 characters), return it
+      if (urlOrId.length === 11 && !urlOrId.includes(' ')) {
+        return urlOrId;
+      }
+      
+      // Try to extract ID from various YouTube URL formats
+      const patterns = [
+        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/v\/|youtube\.com\/watch\?.*vi?=)([a-zA-Z0-9_-]{11})/,
+        /(?:youtube\.com\/watch\?.*v=)([a-zA-Z0-9_-]{11})/
+      ];
+      
+      for (const pattern of patterns) {
+        const match = urlOrId.match(pattern);
+        if (match && match[1]) {
+          return match[1];
+        }
+      }
+      
+      return null;
+    }
+
+    // Build thumbnail URL
+    function buildThumbUrl(videoId, quality) {
+      return `https://img.youtube.com/vi/${videoId}/${quality}.jpg`;
+    }
+
+    // Test if image exists
+    function testImage(url) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve(true);
+        img.onerror = () => resolve(false);
+        img.src = url;
+      });
+    }
+
+    // Get thumbnails for video
+    async function getThumbnails() {
+      const urlOrId = document.getElementById('videoUrl').value.trim();
+      const output = document.getElementById('output');
+      const thumbsContainer = document.getElementById('thumbs');
+      const viewButton = document.getElementById('viewButton');
+      
+      // Clear previous results
+      output.innerHTML = '';
+      thumbsContainer.innerHTML = '';
+      
+      // Disable button during loading
+      viewButton.disabled = true;
+      
+      if (!urlOrId) {
+        output.innerHTML = `<p class="error">Please enter a YouTube video URL or ID</p>`;
+        viewButton.disabled = false;
+        return;
+      }
+      
+      // Parse video ID
+      const videoId = parseVideoId(urlOrId);
+      if (!videoId) {
+        output.innerHTML = `<p class="error">Invalid YouTube URL or ID. Please check and try again.</p>`;
+        viewButton.disabled = false;
+        return;
+      }
+      
+      // Show loading indicator
+      output.innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <p>Fetching thumbnails for video ID: ${videoId}</p>
+        </div>
+      `;
+      
+      // Define thumbnail qualities
+      const qualities = [
+        { name: 'maxresdefault', label: 'Maximum Resolution' },
+        { name: 'sddefault', label: 'Standard Definition' },
+        { name: 'hqdefault', label: 'High Quality' },
+        { name: 'mqdefault', label: 'Medium Quality' },
+        { name: 'default', label: 'Default Quality' },
+        { name: '0', label: 'Thumbnail 1' },
+        { name: '1', label: 'Thumbnail 2' },
+        { name: '2', label: 'Thumbnail 3' },
+        { name: '3', label: 'Thumbnail 4' }
+      ];
+      
+      // Test each thumbnail URL
+      const availableThumbs = [];
+      for (const quality of qualities) {
+        const url = buildThumbUrl(videoId, quality.name);
+        const exists = await testImage(url);
+        if (exists) {
+          availableThumbs.push({
+            url: url,
+            label: quality.label,
+            name: quality.name
+          });
+        }
+      }
+      
+      // Display results
+      if (availableThumbs.length > 0) {
+        output.innerHTML = `<p class="success">✅ Found ${availableThumbs.length} available thumbnails</p>`;
+        
+        // Create thumbnail cards
+        availableThumbs.forEach(thumb => {
+          const card = document.createElement('div');
+          card.className = 'thumbnail-card';
+          
+          card.innerHTML = `
+            <img src="${thumb.url}" alt="${thumb.label}" class="thumbnail-img" onerror="this.style.display='none'">
+            <div class="thumbnail-info">
+              <div class="thumbnail-name">${thumb.label}</div>
+              <button class="view-btn" onclick="viewUrl('${thumb.url}', this)">View Image</button>
+              <button class="view-btn" onclick="downloadImage('${thumb.url}', '${thumb.label}', this)">Download Image</button>
+              <button class="view-btn" onclick="seeVideo('${videoId}')">See Video</button>
+            </div>
+          `;
+          
+          thumbsContainer.appendChild(card);
+        });
+      } else {
+        output.innerHTML = `<p class="error">❌ No thumbnails found for this video. The video may be private or unavailable.</p>`;
+      }
+      
+      // Re-enable button
+      viewButton.disabled = false;
+    }
+    
+    // Copy URL to clipboard
+    function copyUrl(url, button) {
+      navigator.clipboard.writeText(url).then(() => {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('copied');
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.classList.remove('copied');
+        }, 2000);
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+        button.textContent = 'Copy Failed';
+        setTimeout(() => {
+          button.textContent = 'Copy URL';
+        }, 2000);
+      });
+    }
+    
+    // View URL in new tab
+    function viewUrl(url, button) {
+      window.open(url, '_blank');
+      const originalText = button.textContent;
+      button.textContent = 'Opened!';
+      button.classList.add('viewed');
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('viewed');
+      }, 2000);
+    }
+    
+    // See video on YouTube
+    function seeVideo(videoId) {
+      window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+    }
+    
+    // Download image
+    function downloadImage(url, filename, button) {
+      // Create a temporary link element
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename.replace(/[^a-zA-Z0-9]/g, '_') + '.jpg';
+      
+      // Add feedback to button
+      const originalText = button.textContent;
+      button.textContent = 'Downloading...';
+      button.classList.add('viewed');
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Reset button after a short delay
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.classList.remove('viewed');
+      }, 2000);
+    }
+    
+    // Show coffee popup
+    function showCoffeePopup() {
+      document.getElementById('coffeePopup').style.display = 'block';
+      document.getElementById('overlay').style.display = 'block';
+    }
+    
+    // Hide coffee popup
+    function hideCoffeePopup() {
+      document.getElementById('coffeePopup').style.display = 'none';
+      document.getElementById('overlay').style.display = 'none';
+    }
+    
+    // Add event listener for the Buy Me a Coffee button
+    document.getElementById('buyCoffeeBtn').addEventListener('click', function() {
+      showCoffeePopup();
+    });
+    
+  </script>
+</body>
+</html>
